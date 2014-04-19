@@ -1,0 +1,42 @@
+{ 
+	"name" : "centipede",
+	"description" : "a crawler in nodeJS, based on phantomJS",
+	"url" : "http://github.com/itsatony/centipede",
+	"keywords" : [ 
+		"javascript", 
+		"crawler", 
+		"spider", 
+		"nodejs", 
+		"phantomjs" 
+	],
+	"author" : "Toni Wagner <i@itsatony.com>",
+	"contributors" : [],
+	"licenses" : [ "MIT" ],
+	"main" : "./lib/centipede.js",
+	"version" : "0.1.0",
+	"directories" : { 
+		"lib": "./lib",
+		"test": "./tests"
+	},
+	"engines" : { 
+		"node": "> 0.10" 
+	},
+	"scripts": {
+    "test": "node_modules/mocha/bin/mocha"
+  },
+	"bugs": {
+    "url": "https://github.com/itsatony/centipede/issues/new"
+	},
+	"dependencies" : {
+		"bubpubsub": "latest",
+		"escalator": "latest",
+		"minions": "latest",
+		"lg": "latest",
+		"hiredis": "latest",
+		"redis": "latest"
+	},
+  "devDependencies": {
+		"mocha": "latest",
+		"should": "latest"
+  }
+}
