@@ -2,13 +2,21 @@ var pluginsDir = process.cwd() + '/lib/plugins';
 var centipedeInstanceId = 'centi1'; 
 var config = {
 	id: centipedeInstanceId,
-	debug: true,
+	debug: {
+		bubPubSub: false,
+		escalator: false
+	},
 	repl: {
 		port: 'localhost',
 		host: 9999,
 	},
 	lg: {
-		log2console:true
+		log2console:true,
+		loglevel: 0
+	},
+	phantom: {
+		executable: process.cwd() + '/bin/phantom',
+		timeout: 20000
 	},
 	plugins: [
 		pluginsDir + '/frontLeg.getNextQueueUrl',
