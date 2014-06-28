@@ -1,14 +1,19 @@
 var pluginsDir = process.cwd() + '/lib/plugins';
-var centipedeInstanceId = 'centi1'; 
+var centipedeInstanceId = 'cpd01'; 
 var config = {
 	id: centipedeInstanceId,
+	directories: {
+		home: process.cwd(),
+		config: __dirname,
+		plugins: pluginsDir
+	},
 	debug: {
 		bubPubSub: false,
 		escalator: false
 	},
 	repl: {
-		port: 'localhost',
-		host: 9999,
+		host: 'localhost',
+		port: 9999,
 	},
 	lg: {
 		log2console:true,
@@ -18,102 +23,118 @@ var config = {
 		executable: process.cwd() + '/bin/phantom',
 		timeout: 20000
 	},
-	plugins: [
-		pluginsDir + '/frontLeg.getNextQueueUrl',
-		pluginsDir + '/frontLeg.setUserAgent',
-		pluginsDir + '/frontLeg.setViewPort',
-		pluginsDir + '/frontLeg.checkRobotsTxt',
-		pluginsDir + '/midLeg.grabLinks',
-		pluginsDir + '/midLeg.makeSnapshot',
-		pluginsDir + '/backLeg.queueLinks',
-		pluginsDir + '/backLeg.queueDomains',
-	],
-	jobs: [
-		{
-			id: 'deLinkAnalysis',
-			sourceSetKey: 'cpd:dom:de',
-			db: {
-				host: 'redis.centipede.io',
-				port: '6739',
-				username: centipedeInstanceId,
-				password: 'somePassWord'
-			},
-			legs: {
-				front: [
-					{
-						id: 'getNextQueueUrl',
-						db: {
-							host: 'localhost',
-							port: '6739',
-							username: centipedeInstanceId,
-							password: 'somePassWord',
-							queueKey: 'centi1:q:deLinkAnalysis:urls'
-						}
-					},
-					{
-						id: 'setUserAgent',
-						ua: [
-							'googleBot'
-						]
-					},
-					{
-						id: 'setViewPort',
-						x: 1024,
-						y: 768
-					},
-					{
-						id: 'checkRobotsTxt',
-					}
-				],
-				mid: [
-					{
-						id: 'grabLinks',
-					},
-					{
-						id: 'makeSnapshot',
-						box: {
-							x0:0,
-							y0:0,
-							x1:100,
-							y1:100
-						},
-						target: '{{snapdir}}snap_{{md5_url}}.jpg'
-					},
-				],
-				back: [
-					{
-						id: 'queueLinks',
-						whiteList: {
-							tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
-						},
-						blackList: {
-						},
-						db: { 
-							host: 'localhost',
-							port: '6739',
-							username: centipedeInstanceId,
-							password: 'somePassWord',
-							queueKey: 'centi1:q:deLinkAnalysis:urls'
-						}
-					},
-					{
-						id: 'queueDomains', 
-						whiteList: {
-							tld_de: new RegExp("\.de($|\/)", "i")
-						},
-						blackList: {
-						},
-						db: { 
-							host: 'redis.centipede.io',
-							port: '6739',
-							username: centipedeInstanceId,
-							password: 'somePassWord',
-							queueKey: 'cpd:q:dom:de'
-						}
-					}
-				]
-			}
+	head: {
+		redis: {
+			host: '127.0.0.1',
+			port: '6739',
+			// username: '',
+			// password: '',
+			recordPrefix: centipedeInstanceId
 		}
-	]
+	},
+	plugins: [
+		// pluginsDir + '/head.redisClient/head.redisClient',
+		pluginsDir + '/head.queue/head.queue',
+		pluginsDir + '/frontLeg.getNextQueueUrl/frontLeg.getNextQueueUrl',
+		pluginsDir + '/frontLeg.setUserAgent/frontLeg.setUserAgent',
+		pluginsDir + '/frontLeg.setViewPort/frontLeg.setViewPort',
+		pluginsDir + '/frontLeg.checkRobotsTxt/frontLeg.checkRobotsTxt',
+		pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
+		pluginsDir + '/midLeg.makeSnapshot/midLeg.makeSnapshot',
+		pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
+		pluginsDir + '/backLeg.queueDomains/backLeg.queueDomains',
+	],
+	job: {
+		id: 'deLinkAnalysis',
+		queue: {
+			db: {
+				host: '127.0.0.1',
+				port: '6739',
+				// username: centipedeInstanceId,
+				// password: 'somePassWord',
+				recordPrefix: centipedeInstanceId,
+				queueSourceSetKey: centipedeInstanceId + ':dom:de',
+				queueSetKey: centipedeInstanceId + ':q:dom'
+			},
+		},
+		legs: {
+			front: [
+				{
+					id: 'getNextQueueUrl',
+					db: {
+						host: 'localhost',
+						port: '6739',
+						// username: centipedeInstanceId,
+						// password: 'somePassWord',
+						recordPrefix: centipedeInstanceId
+						queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+					}
+				},
+				{
+					id: 'setUserAgent',
+					ua: [
+						// 'Googlebot/2.1 (+http://www.googlebot.com/bot.html)',
+						'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36',
+						
+					]
+				},
+				{
+					id: 'setViewPort',
+					x: 1024,
+					y: 768
+				},
+				{
+					id: 'checkRobotsTxt',
+				}
+			],
+			mid: [
+				{
+					id: 'grabLinks',
+				},
+				{
+					id: 'makeSnapshot',
+					box: {
+						x0:0,
+						y0:0,
+						x1:100,
+						y1:100
+					},
+					target: '{{snapdir}}snap_{{md5_url}}.jpg'
+				},
+			],
+			back: [
+				{
+					id: 'queueLinks',
+					whiteList: {
+						tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
+					},
+					blackList: {
+					},
+					db: { 
+						host: 'localhost',
+						port: '6739',
+						// username: centipedeInstanceId,
+						// password: 'somePassWord',
+						queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+					}
+				},
+				{
+					id: 'queueDomains', 
+					whiteList: {
+						tld_de: new RegExp("\.de($|\/)", "i")
+					},
+					blackList: {
+					},
+					db: { 
+						host: 'localhost',
+						port: '6739',
+						// username: centipedeInstanceId,
+						// password: 'somePassWord',
+						queueKey: centipedeInstanceId + ':q:dom:de'
+					}
+				}
+			]
+		}
+	}
 };
 module.exports = config;
