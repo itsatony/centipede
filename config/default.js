@@ -1,13 +1,15 @@
 var homeDir = process.cwd();
 var pluginsDir = homeDir + '/lib/plugins';
-var resultsDir = homeDir + '/results'
-var snapshotDir = homeDir + '/snapshot'
+var resultsDir = homeDir + '/crawls/results'
+var snapshotDir = homeDir + '/crawls/snapshots'
+var settingsDir = homeDir + '/crawls/settings'
 var centipedeInstanceId = 'cpd01'; 
 var config = {
 	id: centipedeInstanceId,
 	directories: {
 		home: process.cwd(),
 		config: __dirname,
+		settings: settingsDir,
 		plugins: pluginsDir,
 		results: resultsDir,
 		snapshots: snapshotDir
@@ -25,13 +27,16 @@ var config = {
 		loglevel: 0
 	},
 	phantom: {
-		executable: process.cwd() + '/bin/phantom',
-		timeout: 20000
+		// see http://phantomjs.org/build.html
+		// or   sudo apt-get install phantomjs
+		//      
+		executable: '/usr/bin/phantomjs',
+		timeout: 10000
 	},
 	head: {
 		redis: {
 			host: '127.0.0.1',
-			port: '6739',
+			port: '6379',
 			// username: '',
 			// password: '',
 			recordPrefix: centipedeInstanceId
@@ -40,43 +45,35 @@ var config = {
 	plugins: [
 		// pluginsDir + '/head.redisClient/head.redisClient',
 		pluginsDir + '/head.queue/head.queue',
-		pluginsDir + '/frontLeg.getNextQueueUrl/frontLeg.getNextQueueUrl',
-		pluginsDir + '/frontLeg.setUserAgent/frontLeg.setUserAgent',
-		pluginsDir + '/frontLeg.setViewPort/frontLeg.setViewPort',
-		pluginsDir + '/frontLeg.checkRobotsTxt/frontLeg.checkRobotsTxt',
-		pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
+		pluginsDir + '/head.pageCrawl/head.pageCrawl',
+		pluginsDir + '/frontLeg.setSSL/frontLeg.setSSL',
+		pluginsDir + '/midLeg.setUserAgent/midLeg.setUserAgent',
+		pluginsDir + '/midLeg.setViewPort/midLeg.setViewPort',
+		// pluginsDir + '/midLeg.checkRobotsTxt/midLeg.checkRobotsTxt',
+		// pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
 		pluginsDir + '/midLeg.makeSnapshot/midLeg.makeSnapshot',
-		pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
-		pluginsDir + '/backLeg.queueDomains/backLeg.queueDomains',
+		// pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
+		// pluginsDir + '/backLeg.queueDomains/backLeg.queueDomains',
 	],
 	job: {
 		id: 'deLinkAnalysis',
 		queue: {
 			db: {
 				host: '127.0.0.1',
-				port: '6739',
+				port: '6379',
 				// username: centipedeInstanceId,
 				// password: 'somePassWord',
 				recordPrefix: centipedeInstanceId,
+				// for tests:  sadd cpd01:dom:de "http://sistrix.de" "http://zeit.de" "http://kicker.de"
 				queueSourceSetKey: centipedeInstanceId + ':dom:de',
 				queueSetKey: centipedeInstanceId + ':q:dom'
 			},
 		},
 		legs: {
 			front: [
-				{
-					id: 'getNextQueueUrl',
-					options: {
-						db: {
-							host: 'localhost',
-							port: '6739',
-							// username: centipedeInstanceId,
-							// password: 'somePassWord',
-							recordPrefix: centipedeInstanceId
-							queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
-						}
-					}
-				},
+				
+			],
+			mid: [
 				{
 					id: 'setUserAgent',
 					options: {
@@ -91,56 +88,47 @@ var config = {
 					}
 				},
 				{
-					id: 'checkRobotsTxt',
-				}
-			],
-			mid: [
-				{
-					id: 'grabLinks',
-				},
-				{
 					id: 'makeSnapshot',
 					options: {
 						format: 'jpeg',
 						quality: 80
 					}
 				},
+				// {
+					// id: 'grabLinks',
+				// },
 			],
 			back: [
-				{
-					id: 'queueLinks',
-					options: {
-						whiteList: {
-							tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
-						},
-						blackList: {
-						},
-						db: { 
-							host: 'localhost',
-							port: '6739',
-							// username: centipedeInstanceId,
-							// password: 'somePassWord',
-							queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
-						}
-					}
-				},
-				{
-					id: 'queueDomains', 
-					options: {
-						whiteList: {
-							tld_de: new RegExp("\.de($|\/)", "i")
-						},
-						blackList: {
-						},
-						db: { 
-							host: 'localhost',
-							port: '6739',
-							// username: centipedeInstanceId,
-							// password: 'somePassWord',
-							queueKey: centipedeInstanceId + ':q:dom:de'
-						}
-					}
-				}
+				// {
+					// id: 'queueLinks',
+					// options: {
+						// whiteList: {
+							// tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
+						// },
+						// blackList: {
+						// },
+						// db: { 
+							// host: 'localhost',
+							// port: '6379',
+							// queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+						// }
+					// }
+				// },
+				// {
+					// id: 'queueDomains', 
+					// options: {
+						// whiteList: {
+							// tld_de: new RegExp("\.de($|\/)", "i")
+						// },
+						// blackList: {
+						// },
+						// db: { 
+							// host: 'localhost',
+							// port: '6379',
+							// queueKey: centipedeInstanceId + ':q:dom:de'
+						// }
+					// }
+				// }
 			]
 		}
 	}
