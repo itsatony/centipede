@@ -1,11 +1,16 @@
-var pluginsDir = process.cwd() + '/lib/plugins';
+var homeDir = process.cwd();
+var pluginsDir = homeDir + '/lib/plugins';
+var resultsDir = homeDir + '/results'
+var snapshotDir = homeDir + '/snapshot'
 var centipedeInstanceId = 'cpd01'; 
 var config = {
 	id: centipedeInstanceId,
 	directories: {
 		home: process.cwd(),
 		config: __dirname,
-		plugins: pluginsDir
+		plugins: pluginsDir,
+		results: resultsDir,
+		snapshots: snapshotDir
 	},
 	debug: {
 		bubPubSub: false,
@@ -61,27 +66,29 @@ var config = {
 			front: [
 				{
 					id: 'getNextQueueUrl',
-					db: {
-						host: 'localhost',
-						port: '6739',
-						// username: centipedeInstanceId,
-						// password: 'somePassWord',
-						recordPrefix: centipedeInstanceId
-						queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+					options: {
+						db: {
+							host: 'localhost',
+							port: '6739',
+							// username: centipedeInstanceId,
+							// password: 'somePassWord',
+							recordPrefix: centipedeInstanceId
+							queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+						}
 					}
 				},
 				{
 					id: 'setUserAgent',
-					ua: [
-						// 'Googlebot/2.1 (+http://www.googlebot.com/bot.html)',
-						'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36',
-						
-					]
+					options: {
+						ua: 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+					}
 				},
 				{
 					id: 'setViewPort',
-					x: 1024,
-					y: 768
+					options: {
+						x: 1024,
+						y: 768
+					}
 				},
 				{
 					id: 'checkRobotsTxt',
@@ -93,44 +100,45 @@ var config = {
 				},
 				{
 					id: 'makeSnapshot',
-					box: {
-						x0:0,
-						y0:0,
-						x1:100,
-						y1:100
-					},
-					target: '{{snapdir}}snap_{{md5_url}}.jpg'
+					options: {
+						format: 'jpeg',
+						quality: 80
+					}
 				},
 			],
 			back: [
 				{
 					id: 'queueLinks',
-					whiteList: {
-						tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
-					},
-					blackList: {
-					},
-					db: { 
-						host: 'localhost',
-						port: '6739',
-						// username: centipedeInstanceId,
-						// password: 'somePassWord',
-						queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+					options: {
+						whiteList: {
+							tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
+						},
+						blackList: {
+						},
+						db: { 
+							host: 'localhost',
+							port: '6739',
+							// username: centipedeInstanceId,
+							// password: 'somePassWord',
+							queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+						}
 					}
 				},
 				{
 					id: 'queueDomains', 
-					whiteList: {
-						tld_de: new RegExp("\.de($|\/)", "i")
-					},
-					blackList: {
-					},
-					db: { 
-						host: 'localhost',
-						port: '6739',
-						// username: centipedeInstanceId,
-						// password: 'somePassWord',
-						queueKey: centipedeInstanceId + ':q:dom:de'
+					options: {
+						whiteList: {
+							tld_de: new RegExp("\.de($|\/)", "i")
+						},
+						blackList: {
+						},
+						db: { 
+							host: 'localhost',
+							port: '6739',
+							// username: centipedeInstanceId,
+							// password: 'somePassWord',
+							queueKey: centipedeInstanceId + ':q:dom:de'
+						}
 					}
 				}
 			]
