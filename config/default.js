@@ -1,18 +1,14 @@
 var homeDir = process.cwd();
 var pluginsDir = homeDir + '/lib/plugins';
-var resultsDir = homeDir + '/crawls/results'
-var snapshotDir = homeDir + '/crawls/snapshots'
-var settingsDir = homeDir + '/crawls/settings'
+var crawlsDir = homeDir + '/crawls/{{crawlDir}}';
 var centipedeInstanceId = 'cpd01'; 
 var config = {
 	id: centipedeInstanceId,
 	directories: {
 		home: process.cwd(),
 		config: __dirname,
-		settings: settingsDir,
 		plugins: pluginsDir,
-		results: resultsDir,
-		snapshots: snapshotDir
+		crawls: crawlsDir
 	},
 	debug: {
 		bubPubSub: false,
@@ -88,13 +84,13 @@ var config = {
 						y: 768
 					}
 				},
-				// {
-					// id: 'makeSnapshot',
-					// options: {
-						// format: 'jpeg',
-						// quality: 80
-					// }
-				// },
+				{
+					id: 'makeSnapshot',
+					options: {
+						format: 'jpeg',
+						quality: 80
+					}
+				},
 				{
 					id: 'har',
 					options: {
