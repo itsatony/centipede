@@ -47,8 +47,9 @@ var config = {
 		pluginsDir + '/midLeg.setViewPort/midLeg.setViewPort',
 		// pluginsDir + '/midLeg.checkRobotsTxt/midLeg.checkRobotsTxt',
 		// pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
-		pluginsDir + '/midLeg.makeSnapshot/midLeg.makeSnapshot',
-		pluginsDir + '/midLeg.har/midLeg.har',
+		// pluginsDir + '/midLeg.makeSnapshot/midLeg.makeSnapshot',
+		// pluginsDir + '/midLeg.har/midLeg.har',
+		pluginsDir + '/midLeg.usedSoftware/midLeg.usedSoftware',
 		// pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
 		// pluginsDir + '/backLeg.queueDomains/backLeg.queueDomains',
 	],
@@ -84,15 +85,21 @@ var config = {
 						y: 768
 					}
 				},
+				// {
+					// id: 'makeSnapshot',
+					// options: {
+						// format: 'jpeg',
+						// quality: 80
+					// }
+				// },
+				// {
+					// id: 'har',
+					// options: {
+						
+					// }
+				// },
 				{
-					id: 'makeSnapshot',
-					options: {
-						format: 'jpeg',
-						quality: 80
-					}
-				},
-				{
-					id: 'har',
+					id: 'usedSoftware',
 					options: {
 						
 					}
