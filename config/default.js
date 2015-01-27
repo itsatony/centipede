@@ -46,11 +46,11 @@ var config = {
 		pluginsDir + '/midLeg.setUserAgent/midLeg.setUserAgent',
 		pluginsDir + '/midLeg.setViewPort/midLeg.setViewPort',
 		// pluginsDir + '/midLeg.checkRobotsTxt/midLeg.checkRobotsTxt',
-		// pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
+		pluginsDir + '/midLeg.grabLinks/midLeg.grabLinks',
 		// pluginsDir + '/midLeg.makeSnapshot/midLeg.makeSnapshot',
 		// pluginsDir + '/midLeg.har/midLeg.har',
 		pluginsDir + '/midLeg.usedSoftware/midLeg.usedSoftware',
-		// pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
+		pluginsDir + '/backLeg.queueLinks/backLeg.queueLinks',
 		// pluginsDir + '/backLeg.queueDomains/backLeg.queueDomains',
 	],
 	job: {
@@ -63,6 +63,7 @@ var config = {
 				// password: 'somePassWord',
 				recordPrefix: centipedeInstanceId,
 				// for tests:  sadd cpd01:dom:de "http://sistrix.de" "http://zeit.de" "http://kicker.de"
+				//  sadd cpd01:dom:de "https://meinunterricht.de"
 				queueSourceSetKey: centipedeInstanceId + ':dom:de',
 				queueSetKey: centipedeInstanceId + ':q:dom'
 			},
@@ -98,32 +99,34 @@ var config = {
 						
 					// }
 				// },
-				{
-					id: 'usedSoftware',
-					options: {
-						
-					}
-				},
 				// {
-					// id: 'grabLinks',
-				// },
-			],
-			back: [
-				// {
-					// id: 'queueLinks',
+					// id: 'usedSoftware',
 					// options: {
-						// whiteList: {
-							// tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i")
-						// },
-						// blackList: {
-						// },
-						// db: { 
-							// host: 'localhost',
-							// port: '6379',
-							// queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
-						// }
+						
 					// }
 				// },
+				{
+					id: 'grabLinks',
+				},
+			],
+			back: [
+				{
+					id: 'queueLinks',
+					options: {
+						whiteList: {
+							// tld_de: new RegExp("^http(|s):\/\/(.*?\.(de|at|ch))(?!\.)", "i"),
+							mu_de: new RegExp("^http(|s):\/\/www\.meinunterricht\.de.*", "i"),
+						},
+						blackList: {
+						},
+						db: { 
+							host: 'localhost',
+							port: '6379',
+							// queueKey: centipedeInstanceId + ':q:deLinkAnalysis:urls'
+							queueKey: centipedeInstanceId + ':q:muLinkAnalysis:urls'
+						}
+					}
+				},
 				// {
 					// id: 'queueDomains', 
 					// options: {
